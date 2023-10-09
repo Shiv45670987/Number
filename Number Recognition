@@ -1,0 +1,47 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+from tensorflow.keras.utils import to_categorical
+
+# Step 2: Load the MNIST dataset
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+# Step 3: Perform exploratory data analysis
+# Analyze the dimensions, visualize sample images, distribution of digits
+
+# Step 4: Preprocess the data
+# Normalize pixel values, split into train and test sets, convert labels using one-hot encoding
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+
+y_train = to_categorical(y_train)
+y_test = to_categorical(y_test)
+
+# Step 5: Build the deep learning model using CNN
+model = Sequential()
+model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)))
+model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(10, activation='softmax'))
+
+# Step 6: Compile the model
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Step 7: Train the model
+model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=10, batch_size=128)
+
+# Step 8: Evaluate the model's performance
+_, accuracy = model.evaluate(X_test, y_test)
+print("Accuracy:", accuracy)
+
+# Step 9: Use the trained model to predict handwritten digits
+predictions = model.predict(X_test[:10])
+predicted_labels = np.argmax(predictions, axis=1)
+print("Predicted Labels:", predicted_labels)
